@@ -8,14 +8,6 @@ enum layer_names {
     _F2
 };
 
-enum custom_keycodes {
-  ISQ1 = SAFE_RANGE,
-  ISQ2 = SAFE_RANGE,
-};
-//  ;Icelandic quote macros, ^! Ctrl+Alt
-// 	^!1::SendInput, {LAlt down}{Numpad0}{Numpad1}{Numpad3}{Numpad2}{LAlt up}
-// 	^!2::SendInput, {LAlt down}{Numpad0}{Numpad1}{Numpad4}{Numpad7}{LAlt up}
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* 
      * ┌─────┬─────┬┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐     ┌─────┬─────┬─────┬─────┬─────┬─────┬───────────┬─────┐
@@ -90,3 +82,28 @@ void encoder_update_user(uint8_t index, bool clockwise) {
     }
 };
 
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+    
+    // Icelandic quote macros:
+    //   hold left alt, then press keypad 0132, then release alt: „
+    //   hold left alt, then press keypad 0147, then release alt: “
+    case KC_1:
+        if ((get_mods() & (MOD_BIT(KC_LCTL) | MOD_BIT(KC_LALT))) == (MOD_BIT(KC_LCTL) | MOD_BIT(KC_LALT))) {
+            if (record->event.pressed) {
+                SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_P0) SS_TAP(X_P1) SS_TAP(X_P3) SS_TAP(X_P2) SS_UP(X_LALT));
+                return false; // Do not let QMK process the keycode further
+            }
+        }
+        break;
+    case KC_2:
+        if ((get_mods() & (MOD_BIT(KC_LCTL) | MOD_BIT(KC_LALT))) == (MOD_BIT(KC_LCTL) | MOD_BIT(KC_LALT))) {
+            if (record->event.pressed) {
+                SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_P0) SS_TAP(X_P1) SS_TAP(X_P4) SS_TAP(X_P7) SS_UP(X_LALT));
+                return false; // Do not let QMK process the keycode further
+            }
+        }
+        break;
+    }
+    return true;
+};
