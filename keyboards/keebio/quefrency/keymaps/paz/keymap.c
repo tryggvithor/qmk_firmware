@@ -81,9 +81,9 @@ void encoder_update_user(uint8_t index, bool clockwise) {
     }
 };
 
-#define MODS_SHIFT (get_mods() & MOD_BIT(KC_LSHIFT) || get_mods() & MOD_BIT(KC_RSHIFT))
-#define MODS_CTRL  (get_mods() & MOD_BIT(KC_LCTL) || get_mods() & MOD_BIT(KC_RCTRL))
-#define MODS_ALT   (get_mods() & MOD_BIT(KC_LALT) || get_mods() & MOD_BIT(KC_RALT))
+#define MODS_LSHIFT (get_mods() & MOD_BIT(KC_LSHIFT))
+#define MODS_LCTRL  (get_mods() & MOD_BIT(KC_LCTL))
+#define MODS_LALT   (get_mods() & MOD_BIT(KC_LALT))
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -92,14 +92,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     //   hold left alt, then press keypad 0132, then release alt: „
     //   hold left alt, then press keypad 0147, then release alt: “
     case KC_1:
-        if (record->event.pressed && MODS_CTRL && MODS_ALT) {
+        if (record->event.pressed && MODS_LCTRL && MODS_LALT) {
             clear_mods();
             SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_P0) SS_TAP(X_P1) SS_TAP(X_P3) SS_TAP(X_P2) SS_UP(X_LALT));
+            
+            // Make it possible to press 1 and 2 without releasing the mods
+            register_code(KC_LCTRL); 
+            register_code(KC_LALT);
             return false; // No further processing by QMK
         }
         break;
     case KC_2:
-    if (record->event.pressed && MODS_CTRL && MODS_ALT) {
+    if (record->event.pressed && MODS_LCTRL && MODS_LALT) {
             clear_mods();
             SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_P0) SS_TAP(X_P1) SS_TAP(X_P4) SS_TAP(X_P7) SS_UP(X_LALT));
             return false; // No further processing by QMK
